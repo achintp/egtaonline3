@@ -1,0 +1,76 @@
+<div class="fluxError alert alert-error">
+</div>
+
+<div id = "set">
+	<h1>Reduce Game</h1>
+	<%= form_tag(elim_game_path, remote: true, role: "form") do%>
+		<fieldset ><!-- PBS Arguments -->
+			<legend>PBS Script Arguments:</legend>
+			<div>
+				<label for="time">Scripts Running Time</label>	
+				<div>
+					<%= select_tag "day", options_for_select((0..7).step(1)) %>day(s)
+					<%= select_tag "hour", options_for_select((0..23).step(1), 6) %>hour(s)
+					<%= select_tag "min", options_for_select((0..59).step(1)) %>minute(s)
+				</div>
+			</div>
+			<div>
+				<label for="memory">Allocated Memory</label>	
+				<div>
+					<%= number_field_tag("memory", 4000, {step:1, min:0})%>
+					<%= select_tag("unit", "<option  selected='selected' >mb</option> <option>gb</option>".html_safe)%>
+				</div>
+			</div>
+		</fieldset><!--End of PBS arguments-->
+
+		<fieldset><!--Reduction Script Arguments-->
+			<legend>Game Reduction Arguments:</legend>
+			<div>
+				<%= label_tag('do_iesds', 'Do Iterated Elimination by pure strategy') %>
+				<%= check_box_tag('do_iesds', 'do_iesds', false) %>
+			</div>
+
+			<div>
+				<%= label_tag('do_delta', 'Do weaker-than-weak elimination') %>
+				<%= check_box_tag('do_delta', 'do_delta', false) %>
+			</div>
+
+			<div>Select player to constrain:</div>
+			<% @role_names = []%>
+			<% @strategy_count = []%>
+			<% game.roles.each do |role| %>
+				<% @role_names.push(role.name)%>
+				<% @strategy_count.push(role.strategies.length)%>
+			<% end %>
+
+			<div>
+				<label for="selected_role"></label>	
+				<%= radio_button_tag(:selected_role, @role_names[0], true, class: "reduced_input") %>
+				<%= label_tag(:selected_role_1, @role_names[0]) %>
+				<%= radio_button_tag(:selected_role, @role_names[1], false, class: "reduced_input") %>
+				<%= label_tag(:selected_role_2, @role_names[1]) %>
+			</div>
+			<div>Select game size to reduce to:</div>
+			<div>
+				<%= label_tag(@role_names[0], @role_names[0]) %>
+				<%= select_tag @role_names[0], options_for_select((1..@strategy_count[0]).step(1)) %>
+				<%= label_tag(@role_names[1], @role_names[1]) %>
+				<%= select_tag @role_names[1], options_for_select((1..@strategy_count[1]).step(1)) %>
+			</div>
+				
+
+			<!-- <div>
+				<%= label_tag('') %>
+			</div> -->
+		</fieldset>		
+		
+		<br />
+	<%= submit_tag("Reduce Game")%>
+	<% end %>
+</div>
+
+<div id = "processing">
+	<h1>Analyzing...</h1>
+	<p>We will send you an email when the analysis output is ready. Please click the link at the game page to download your file.</p>
+	<p>Note: You need to refresh the game page to get output/error files </p>
+</div>

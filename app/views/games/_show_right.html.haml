@@ -4,3 +4,5 @@
 = link_to "Set Control Variates", edit_game_control_variable_path(game.id, game.simulator_instance_id), class: 'btn btn-primary'
 = link_to "Analyze JSON in EGAT", create_process_game_path(game.id), method: :post, class: 'btn btn-primary'
 = link_to "Link to Analysis Folder", analysis_path, class: 'btn btn-primary'
+-if game.roles.length == 2
+	= link_to "Reduce Game using Delta-Elim", delta_elim_game_path(game.id), method: :post, class: 'btn btn-primary'

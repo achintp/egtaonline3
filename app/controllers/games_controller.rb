@@ -98,8 +98,28 @@ class GamesController < ProfileSpacesController
     game.destroy
     respond_with(game)
   end
-  def create_process
-    
+
+  def create_process    
+  end
+
+  def delta_elim
+  end
+
+  def elim
+    pbs_formatter = ReductionPbsFormatter.new("#{current_user.email}",params[:day], params[:hour], params[:min], params[:memory], params[:unit])
+    if params[:do_iesds] == nil
+      red_args = ReductionArgumentSetter.new(0)
+    else
+      red_args = ReductionArgumentSetter.new(params[params[:selected_role]])
+    end
+
+    manager = ReductionManager.new(game, red_args, pbs_formatter)
+    response = manager.reduce
+
+    response = "No connection to proxy"
+    unless response =~ /\A(\d+)/ 
+       flash[:flux_error] = "Submission failed: #{response}" 
+    end
   end
   
   def analyze
@@ -121,8 +141,6 @@ class GamesController < ProfileSpacesController
       subgame_obj = SubgameArgumentSetter.new
     end
 
-
-
     scripts_argument_setter_obj = ScriptsArgumentSetter.new(analysis_obj, params[:enable_dominance], reduction_obj,subgame_obj)
     pbs_formatter_obj = AnalysisPbsFormatter.new("#{current_user.email}",params[:day], params[:hour], params[:min], params[:memory], params[:unit])
     
@@ -143,6 +161,4 @@ class GamesController < ProfileSpacesController
     params.require(:game).permit(:name, :size, :simulator_instance_id)
   end
 
-
 end
-

@@ -33,6 +33,8 @@ Egtaonline3::Application.routes.draw do
     #########################
     post :create_process, on: :member
     post :analyze, on: :member
+    post :delta_elim, on: :member
+    post :elim, on: :member
     #########################
     resources :roles, only: [:create, :destroy] do
       member do
