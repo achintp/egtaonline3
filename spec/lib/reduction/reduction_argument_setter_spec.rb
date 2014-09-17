@@ -4,6 +4,14 @@ class GamePresenter
 end
 
 $run_string = "python parseGame.py input -role -size > output"
+$get_script_string = <<-COM
+module load python/2.7.5
+mkdir working_dir
+cp -r script_path/* working_dir
+
+cd working_dir
+export PYTHONPATH=$PYTHONPATH:script_path
+  		COM
 
 describe ReductionArgumentSetter do
 	let(:argument_list) {"-role -size"}
@@ -41,13 +49,31 @@ describe ReductionArgumentSetter do
 		end
 	end
 
-	# describe '#run_command' do
-	# 	@arg_setter.set_input_file("input")
-	# 	@arg_setter.set_output_file("output")
-	# 	it 'prepares the run command' do
-			
-	# 		expect(@arg_setter.run_command).to eq($run_string)
-	# 	end
-	# end
+	describe '#script_preparation_commands' do
+		let(:working_dir) {"working_dir"}
+		let(:script_path) {"script_path"}
+		describe '#get_scripts' do			
+			it 'prepares the copy scripts command' do
+				@arg_setter.set_input_file("input")
+				@arg_setter.set_output_file("output")
+				res = @arg_setter.get_scripts(:working_dir, :script_path)
+				expect(@arg_setter.instance_variable_get(:@work_dir)). to eq(:working_dir)
+				expect(res).to eq($get_script_string)
+			end
+		end
+		describe '#run_commands' do
+			it 'prepares the command for executing script' do
+				@arg_setter.set_input_file("input")
+				@arg_setter.set_output_file("output")
+				expect(@arg_setter.run_command).to eq($run_string)
+			end
+		end
+
+		describe '#clean_up' do
+			it 'Makes the clean up script' do
+				#Add here
+			end
+		end
+	end
 end
 
